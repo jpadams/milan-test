@@ -9,9 +9,9 @@ from dagger import dag, function, object_type
 class Milan:
     
     @function
-    async def poetry_base(self) -> dagger.Container:
+    def poetry_base(self) -> dagger.Container:
         """Build an Ubuntu Container with Poetry"""
-        return await (
+        return (
             dag.container()
             .from_("ubuntu:latest")
             .with_exec(["apt", "update", "-y"])
@@ -23,11 +23,18 @@ class Milan:
         )
 
     @function
-    async def test(self, source: dagger.Directory) -> dagger.Container:
+    def test(self, source: dagger.Directory) -> dagger.Container:
         """Build an Ubuntu Container with Poetry"""
-        return await (
+        return (
             self.poetry_base()
             .with_directory("/src", source)
             .with_workdir("/src")
             .with_exec(["poetry", "install"])
         )
+
+    @function
+    async def scan(self) -> str:
+        """Scan with Trivy"""
+        repo = "https://github.com/fpgmaas/cookiecutter-poetry-example"
+        dir = dag.git(repo).branch("main").tree()
+        return await dag.trivy().scan_container(self.test(dir))

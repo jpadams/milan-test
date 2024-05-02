@@ -1,5 +1,12 @@
 {
   "name": "milan",
   "sdk": "python",
+  "dependencies": [
+    {
+      "name": "trivy",
+      "source": "github.com/jpadams/daggerverse/trivy@dce5436fb7dea3e6283557c9b50c7e077d524653"
+    }
+  ],
+  "source": ".",
   "engineVersion": "v0.11.2"
 }
